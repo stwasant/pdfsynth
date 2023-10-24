@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import NavBar from '@/src/components/NavBar';
 import Providers from '../components/Providers';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
