@@ -3,11 +3,12 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { db } from '../db';
 import { privateProcedure, publicProcedure, router } from './trpc';
+import { getUserSesion } from '../lib/utils';
 
 export const appRouter = router({
   authCallback: publicProcedure.query(async () => {
-    const { getUser } = getKindeServerSession();
-    const user = getUser();
+    // const { getUser } = getKindeServerSession();
+    const user = getUserSesion();
 
     if (!user.id || !user.email) throw new TRPCError({ code: 'UNAUTHORIZED' });
 
@@ -38,6 +39,20 @@ export const appRouter = router({
         userId: userId,
       },
     });
+  }),
+
+  getFile: privateProcedure.input(z.object({ key: z.string() })).mutation(async ({ ctx, input }) => {
+    const { userId } = ctx;
+    const file= await db.file.findFirst({
+      where:{
+        key: input.key,
+        userId: userId
+      }
+    });
+
+    if (!file) throw new TRPCError({ code: 'NOT_FOUND' });
+
+    return file;
   }),
   deleteFile: privateProcedure
     .input(z.object({ id: z.string() }))

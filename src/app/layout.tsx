@@ -1,10 +1,11 @@
+import NavBar from '@/src/components/NavBar';
 import { cn } from '@/src/lib/utils';
-import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import NavBar from '@/src/components/NavBar';
-import Providers from '../components/Providers';
 import 'react-loading-skeleton/dist/skeleton.css';
+import Providers from '@/src/components/Providers';
+import { Toaster } from '@/src/components/ui/toaster'
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang='en' className='light'>
       <Providers>
         <body className={cn('min-h-screen font-sans antialiased grainy', inter.className)}>
+          <Toaster />
           <NavBar />
           {children}
         </body>
