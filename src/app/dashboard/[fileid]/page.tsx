@@ -2,7 +2,6 @@ import ChatWrapper from '@/src/components/ChatWrapper';
 import PdfRenderer from '@/src/components/PdfRenderer';
 import { db } from '@/src/db';
 import { getUserSesion } from '@/src/lib/utils';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { notFound, redirect } from 'next/navigation';
 
 interface PageProps {
@@ -12,7 +11,6 @@ interface PageProps {
 }
 
 const Page = async ({ params }: PageProps) => {
-  // const { getUser } = getKindeServerSession();
   const user = getUserSesion();
   const { fileid } = params;
 
@@ -33,7 +31,7 @@ const Page = async ({ params }: PageProps) => {
         {/* Left Side */}
         <div className='flex-1 xl:flex'>
           <div className='px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6'>
-            <PdfRenderer url={file.url}/>
+            <PdfRenderer url={file.url} />
           </div>
         </div>
         {/* Right Side */}

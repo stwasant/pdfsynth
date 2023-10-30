@@ -1,28 +1,23 @@
 'use client';
 
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
+import { Cloud, File, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import DropZone from 'react-dropzone';
+import { trpc } from '../app/_trpc/client';
+import { useUploadThing } from '../lib/uploadthing';
 import { Button } from './ui/button';
 import { DialogContent } from './ui/dialog';
-import DropZone from 'react-dropzone';
-import { Cloud, File, Loader2 } from 'lucide-react';
 import { Progress } from './ui/progress';
-import { useUploadThing } from '../lib/uploadthing';
 import { useToast } from './ui/use-toast';
-import { trpc } from '../app/_trpc/client';
-import { useRouter } from 'next/navigation';
 
 const UploadFileDropZone = () => {
   const router = useRouter();
-
   const [isUploading, setUploading] = useState<boolean>(true);
-
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-
   const { startUpload } = useUploadThing('pdfUploader');
-
   const { toast } = useToast();
-
   const { mutate: startPolling } = trpc.getFile.useMutation({
     onSuccess: (file) => {
       router.push(`/dashboard/${file.id}`);
@@ -109,20 +104,17 @@ const UploadFileDropZone = () => {
               ) : null}
               {isUploading ? (
                 <div className='w-full mt-4 max-w-xs mx-auto'>
-                  <Progress 
-                  value={uploadProgress} 
-                  className='h-1 w-full bg-zinc-200' 
-                  indicatorColor={
-                    uploadProgress === 100 ? 'bg-green-500' : ''
-                  }/>
-                  {
-                    uploadProgress === 100 ? (
-                      <div className='flex gap-1 items-center justify-center text-sm text-zinc-700 text-center pt-2'>
-                        <Loader2 className='w-3 h-3 animate-spin'/>
-                        Redirecting...
-                      </div>
-                    ): null
-                  }
+                  <Progress
+                    value={uploadProgress}
+                    className='h-1 w-full bg-zinc-200'
+                    indicatorColor={uploadProgress === 100 ? 'bg-green-500' : ''}
+                  />
+                  {uploadProgress === 100 ? (
+                    <div className='flex gap-1 items-center justify-center text-sm text-zinc-700 text-center pt-2'>
+                      <Loader2 className='w-3 h-3 animate-spin' />
+                      Redirecting...
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
               <input {...getInputProps} type='file' id='dropzone-file' className='hidden' />

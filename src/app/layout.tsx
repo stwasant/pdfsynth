@@ -1,10 +1,11 @@
 import NavBar from '@/src/components/NavBar';
+import Providers from '@/src/components/Providers';
+import { Toaster } from '@/src/components/ui/toaster';
 import { cn } from '@/src/lib/utils';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import 'react-loading-skeleton/dist/skeleton.css';
-import Providers from '@/src/components/Providers';
-import { Toaster } from '@/src/components/ui/toaster'
+import 'simplebar-react/dist/simplebar.min.css';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
