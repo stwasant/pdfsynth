@@ -1,5 +1,5 @@
 'use client';
-import { ChevronDown, ChevronUp, Loader2, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Loader2, RotateCw, Search } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,16 +12,17 @@ import { z } from 'zod';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Input } from './ui/input';
 import { useToast } from './ui/use-toast';
 
 import SimpleBar from 'simplebar-react';
+import PdfFullScreen from './PdfFullScreen';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -31,9 +32,12 @@ interface PdfRendererProps {
 
 const PdfRenderer: React.FC<PdfRendererProps> = ({ url }) => {
   const { toast } = useToast();
+
   const [numPages, setNumPages] = useState<number>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [scale, setScale] = useState<number>(1);
+  const [rotate, setRotate] = useState<number>(0);
+  const [isLoadedSuccess,setIsLoadedSuccess] = useState<boolean>(false);
 
   const customPageValidator = z.object({
     page: z.string().refine((num) => Number(num) > 0 && Number(num) <= numPages!),
@@ -61,7 +65,11 @@ const PdfRenderer: React.FC<PdfRendererProps> = ({ url }) => {
   };
   return (
     <div className='w-full bg-white rounded-md shadow flex flex-col items-center'>
-      <div className='h-14 w-full border-b border-zinc-200 flex items-center justify-between px-2'>
+      <div
+        className={cn(
+          'h-14 w-full border-b border-zinc-200 flex items-center justify-between px-2',
+          !isLoadedSuccess ? 'pointer-events-none' : ''
+        )}>
         <div className='flex items-center gap-1.5'>
           <Button
             disabled={currentPage <= 1}
@@ -119,6 +127,15 @@ const PdfRenderer: React.FC<PdfRendererProps> = ({ url }) => {
               <DropdownMenuItem onSelect={() => setScale(2.5)}>250%</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button
+            aria-label='rotate 90 degrees'
+            variant='ghost'
+            onClick={() => {
+              setRotate((prev) => (prev >= 270 ? 0 : prev + 90));
+            }}>
+            <RotateCw className='w-4 h-4' />
+          </Button>
+          <PdfFullScreen fileUrl={url} />
         </div>
       </div>
       <div className='flex-1 w-full max-h-screen'>
@@ -140,7 +157,18 @@ const PdfRenderer: React.FC<PdfRendererProps> = ({ url }) => {
                 });
               }}
               onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
-              <Page width={width ? width : 1} pageNumber={currentPage} scale={scale} />
+              <Page
+                width={width ? width : 1}
+                pageNumber={currentPage}
+                scale={scale}
+                rotate={rotate}
+                loading={
+                  <div className='flex justify-center'>
+                    <Loader2 className='my-24 h-6 w-6 animate-spin' />
+                  </div>
+                }
+                onLoadSuccess={() => setIsLoadedSuccess(true)}
+              />
             </Document>
           </div>
         </SimpleBar>
