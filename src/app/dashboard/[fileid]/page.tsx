@@ -1,4 +1,4 @@
-import ChatWrapper from '@/src/components/ChatWrapper';
+import ChatWrapper from '@/src/components/chat/ChatWrapper';
 import PdfRenderer from '@/src/components/PdfRenderer';
 import { db } from '@/src/db';
 import { getUserSesion } from '@/src/lib/utils';
@@ -36,7 +36,7 @@ const Page = async ({ params }: PageProps) => {
         </div>
         {/* Right Side */}
         <div className='shrink-0 flex-[0.75] border-t border-gray-200 lg:w-96 lg:border-l lg:border-t-0'>
-          <ChatWrapper />
+          <ChatWrapper fileId={file.id} />
         </div>
       </div>
     </div>
