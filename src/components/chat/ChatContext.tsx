@@ -1,5 +1,8 @@
+import { trpc } from '@/src/app/_trpc/client';
 import { useMutation } from '@tanstack/react-query';
-import React, { ReactNode, createContext, useState } from 'react';
+import React, { ReactNode, createContext, useRef, useState } from 'react';
+import { useToast } from '../ui/use-toast';
+import { add } from 'date-fns';
 
 type StreamResponse = {
   addMessage: () => void;
@@ -24,6 +27,12 @@ export const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ fileId
   const [message, setMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const utils = trpc.useUtils();
+
+  const { toast } = useToast();
+
+  const backupMessage = useRef<string>('');
+
   const { mutate: sendMessage } = useMutation({
     mutationFn: async ({ message }: { message: string }) => {
       const response = await fetch('/api/message', {
@@ -42,5 +51,20 @@ export const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ fileId
     },
   });
 
-  return <h1>hello</h1>;
+  const addMessage = () => sendMessage({ message });
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(event.target.value);
+  }
+
+  return (
+    <ChatContext.Provider
+      value={{
+        addMessage,
+        message,
+        handleInputChange,
+        isLoading,
+      }} >
+      {children}
+    </ChatContext.Provider>
+  )
 };

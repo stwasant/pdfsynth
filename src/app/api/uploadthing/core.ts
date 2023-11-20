@@ -29,7 +29,6 @@ export const ourFileRouter = {
           key: file.key,
           name: file.name,
           userId: metadata.userId,
-          // url: `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`,
           url: httpUploadingUrl,
           uploadStatus: 'PROCESSING',
         },
@@ -37,30 +36,25 @@ export const ourFileRouter = {
 
       // Vectorization process
       try {
-        console.log('httpUploadingUrl:',httpUploadingUrl);
+        
         const response = await fetch(httpUploadingUrl);
         const blobResponse = await response.blob();
         const loader = new PDFLoader(blobResponse);
         const pageLevelDocs = await loader.load();
         const pagesAmt = pageLevelDocs.length;
-        console.log('response:',response);
-        console.log('blobResponse:',blobResponse);
-        console.log('loader:',loader);
-        console.log('pageLevelDocs:',pageLevelDocs);
-        console.log('pagesAmt:',pagesAmt);
         
         //Vectorization
         const pineconeIndex = pinecone.Index("pdfsynth");
+        // const pineconeIndex = pinecone.Index("pdfname");
         
         const embeddings = new OpenAIEmbeddings({
           openAIApiKey: process.env.OPENAI_API_KEY,
         });
         
-        console.log('pineconeIndex:',pineconeIndex);
-        console.log('embeddings:',embeddings);
         await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
           pineconeIndex,
-          namespace: createdFile.id,
+          namespace: createdFile.id, //TODO: check how this affect the logic
+          
         });
 
         await db.file.update({
@@ -72,7 +66,7 @@ export const ourFileRouter = {
           },
         });
       } catch (error) {
-        console.log('error:', error);
+        
         await db.file.update({
           data: {
             uploadStatus: 'FAILED',

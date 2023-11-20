@@ -1,8 +1,10 @@
 import { Pinecone } from '@pinecone-database/pinecone';
 
 export const pinecone = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY!,
-    environment: 'gcp-starter'
+    // apiKey: process.env.PINECONE_API_KEY!,
+    apiKey: process.env.PINECONE_NAMESPACE_API_KEY!,
+    environment: 'us-east-1-aws'
+    // environment: 'gcp-starter'
 })
 
 
